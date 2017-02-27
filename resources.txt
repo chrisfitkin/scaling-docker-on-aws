@@ -1,0 +1,36 @@
+------ AWS IAM User ------
+chrisfitkin
+AKIAJOPZVB3UKS6H36PA
+jQ4WN6QNXmVz53dabFinIFgW+lX9MG1nmAi8tFBw
+
+------ Security Group ------
+{
+    "GroupId": "sg-da4d40a6"
+}
+
+------ Create ECS Instance ------
+aws ec2 run-instances --image-id ami-b2df2ca4 --count 1 --instance-type t2.micro --iam-instance-profile Name=ecsInstanceRole --key-name aws-chrisfitkin --security-group-ids sg-da4d40a6 --user-data file://deepdive/copy-ecs-config-to-s3
+
+Instance ID: i-0633bc7c418becb5d
+
+------ List Cluster Instances -----
+aws ecs list-container-instances --cluster deepdive
+
+------ Describe Container Instance -----
+aws ecs describe-container-instances --cluster deepdive --container-instances arn:aws:ecs:us-east-1:323038792461:container-instance/c6ed6a83-5333-4c46-b30c-eec78f883621
+
+aws ec2 terminate-instances --instance-ids INSTANCE_ID
+
+
+
+for b in `aws s3 ls --profile cfitkin-rtn | cut -c 20-`; do echo "----- $b -----"; aws s3 ls s3://$b --recursive --profile cfitkin-rtn | grep .gif | cut -c 32-; echo ""; done > rtn_s3_gifs.txt
+
+------ Create Task Definition -----
+aws ecs register-task-definition --cli-input-json file://web-task-definition.json
+
+----- Public DNS -----
+ec2-54-174-42-189.compute-1.amazonaws.com
+
+----- ECR Docker Registry -----
+aws ecr get-login
+https://323038792461.dkr.ecr.us-east-1.amazonaws.com
